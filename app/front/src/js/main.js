@@ -19,6 +19,7 @@ async function checkAuthAndLoad() {
 
         // ページ別初期化
         if (document.getElementById('group-list'))   await loadMyGroups();
+        if (document.getElementById('notification-list')) await loadNotificationFeed();
         if (document.getElementById('search-results') &&
             document.getElementById('search-input'))  initSearchBookPage();
         if (document.getElementById('bookshelf-list')) await loadBookshelf();
@@ -167,6 +168,30 @@ async function loadMyGroups() {
         container.innerHTML = `<p style="color:red; grid-column:1/-1;">グループの取得に失敗しました</p>`;
         console.error(e);
     }
+}
+
+async function loadNotificationFeed() {
+    const container = document.getElementById('notification-list');
+    try {
+        const activities = await getMyActivities();
+        renderNotificationFeed(activities);
+    } catch (e) {
+        container.innerHTML = `<p style="color:red; text-align:center;">アクティビティの取得に失敗しました</p>`;
+        console.error(e);
+    }
+}
+
+function renderNotificationFeed(activities) {
+    const container = document.getElementById('notification-list');
+    if (activities.length === 0) {
+        container.innerHTML = `<p style="color:#999; text-align:center;">まだアクティビティがありません</p>`;
+        return;
+    }
+    container.innerHTML = activities.map(a => `
+        <div class="notification-item" style="padding:10px 0; border-bottom:1px solid #eee; font-size:0.9rem;">
+            <b>${escapeHtml(a.display_username)}</b> が ${escapeHtml(a.display_time)}に
+            <b>${escapeHtml(a.group_name)}</b> へ進捗を追加しました
+        </div>`).join('');
 }
 
 function renderGroupCard(group) {

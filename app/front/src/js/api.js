@@ -25,6 +25,12 @@ async function getMyGroups() {
     return res.json();
 }
 
+async function getMyActivities() {
+    const res = await fetch(`${API_BASE}/groups/activities`);
+    if (!res.ok) throw new Error("アクティビティの取得に失敗しました");
+    return res.json();
+}
+
 async function getGroup(groupId) {
     const res = await fetch(`${API_BASE}/groups/${groupId}`);
     if (res.status === 403) throw new Error("403");
